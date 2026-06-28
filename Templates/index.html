@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LeadHunter — Bay Area Construction</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+:root {
+  --bg:#0d1117; --surface:#161b22; --surface2:#1c2128;
+  --border:#21262d; --accent:#f0a500; --text:#e6edf3;
+  --muted:#7d8590; --green:#3fb950; --red:#f85149; --blue:#58a6ff;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+/* HEADER */
+header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28px;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100}
+.logo{font-size:17px;font-weight:700;letter-spacing:-.5px}.logo span{color:var(--accent)}
+.hstats{display:flex;gap:20px;font-size:12px;color:var(--muted)}
+.hstats strong{color:var(--text);font-variant-numeric:tabular-nums}
+
+/* LAYOUT */
+.layout{display:grid;grid-template-columns:290px 1fr;min-height:calc(100vh - 56px)}
+
+/* SIDEBAR */
+.sidebar{background:var(--surface);border-right:1px solid var(--border);padding:20px 16px;overflow-y:auto;display:flex;flex-direction:column;gap:0}
+.slabel{font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);margin:20px 0 10px}
+.slabel:first-child{margin-top:0}
+
+/* KEY ROWS */
+.key-row{margin-bottom:9px}
+.key-row label{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);margin-bottom:3px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--red);flex-shrink:0;transition:background .3s}
+.dot.set{background:var(--green)}
+.key-row input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:5px;padding:6px 9px;font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--text);outline:none;transition:border-color .2s}
+.key-row input:focus{border-color:var(--accent)}
+
+/* APPROVAL BADGE */
+.approval{font-size:10px;color:var(--muted);margin-top:2px;padding-left:13px}
+.approval.manual{color:#e8b04b}
+
+/* BUTTONS */
+.btn{width:100%;padding:8px 14px;border-radius:6px;border:none;font-size:13px;font-weight:600;cursor:pointer;transition:opacity .15s,transform .1s;font-family:'Inter',sans-serif}
+.btn:hover{opacity:.85}.btn:active{transform:scale(.98)}
+.btn-primary{background:var(--accent);color:#000}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--text)}
+.btn-danger{background:var(--red);color:#fff}
+.btn-green{background:var(--green);color:#000}
+.btn-blue{background:var(--blue);color:#000}
+.btn-sm{font-size:12px;padding:6px 12px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.mt8{margin-top:8px}.mt12{margin-top:12px}
+
+/* FORM INPUTS */
+.field{margin-bottom:10px}
+.field label{display:block;font-size:11px;color:var(--muted);margin-bottom:4px}
+.field input,.field select{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:5px;padding:7px 10px;font-size:12px;color:var(--text);outline:none;transition:border-color .2s;font-family:'Inter',sans-serif}
+.field input:focus,.field select:focus{border-color:var(--accent)}
+
+/* CHECKBOXES */
+.src-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.src-item{display:flex;align-items:center;gap:7px;font-size:12px;cursor:pointer;padding:6px 8px;border:1px solid var(--border);border-radius:5px;transition:border-color .2s}
+.src-item:hover{border-color:var(--muted)}
+.src-item input[type=checkbox]{width:13px;height:13px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
+.src-item .src-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.src-item .src-name{font-weight:500}
+.src-item .src-status{font-size:10px;color:var(--muted);margin-left:auto}
+
+/* MAIN */
+main{padding:22px 26px;overflow-y:auto}
+
+/* TABS */
+.tabs{display:flex;gap:2px;margin-bottom:18px;border-bottom:1px solid var(--border)}
+.tab{padding:7px 14px;font-size:12px;font-weight:500;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s}
+.tab:hover{color:var(--text)}.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+
+/* SOURCE PILLS BAR */
+.pills{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.pill{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;border:1px solid;cursor:pointer;transition:opacity .15s}
+.pill:hover{opacity:.75}
+
+/* TABLE */
+.tbl-wrap{overflow-x:auto;border-radius:7px;border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:12px}
+thead{background:var(--surface)}
+th{padding:9px 12px;text-align:left;font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);white-space:nowrap;border-bottom:1px solid var(--border)}
+td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.018)}
+
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;border:1px solid}
+.b-Yelp     {background:#ff1a1a1a;color:#ff6b6b;border-color:#ff1a1a44}
+.b-Apollo   {background:#f0a5001a;color:#f0a500;border-color:#f0a50044}
+.b-Facebook {background:#1877f21a;color:#58a6ff;border-color:#1877f244}
+.b-LinkedIn {background:#0a66c21a;color:#79c0ff;border-color:#0a66c244}
+.b-Angi     {background:#ff61001a;color:#ffa05a;border-color:#ff610044}
+.b-Thumbtack{background:#009fd91a;color:#56d3ff;border-color:#009fd944}
+.b-Houzz    {background:#4dac261a;color:#70db4f;border-color:#4dac2644}
+
+.stars{color:var(--accent);font-size:10px}
+.link{color:var(--blue);font-size:11px;text-decoration:none}
+.link:hover{text-decoration:underline}
+.dim{color:var(--muted)}
+
+/* EMPTY STATE */
+.empty{text-align:center;padding:50px 20px;color:var(--muted)}
+.empty .icon{font-size:44px;margin-bottom:10px}
+.empty h3{font-size:15px;color:var(--text);margin-bottom:5px}
+
+/* LOG */
+#log{background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:13px 15px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);min-height:80px;max-height:400px;overflow-y:auto;white-space:pre-wrap;line-height:1.7}
+.ls{color:var(--green)}.le{color:var(--red)}.li{color:var(--blue)}.lw{color:#e8b04b}
+
+/* STATS CARDS */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-bottom:18px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:12px 14px}
+.card .cv{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums}
+.card .cl{font-size:11px;color:var(--muted);margin-top:2px}
+
+/* SPINNER */
+.spinner{display:inline-block;width:13px;height:13px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:5px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Lead<span>Hunter</span> 🏗️</div>
+  <div class="hstats">
+    <div>Total: <strong id="hTotal">0</strong></div>
+    <div>Yelp: <strong id="hYelp">0</strong></div>
+    <div>Apollo: <strong id="hApollo">0</strong></div>
+    <div>Facebook: <strong id="hFacebook">0</strong></div>
+    <div>LinkedIn: <strong id="hLinkedIn">0</strong></div>
+    <div>Angi: <strong id="hAngi">0</strong></div>
+    <div>Thumbtack: <strong id="hThumbtack">0</strong></div>
+    <div>Houzz: <strong id="hHouzz">0</strong></div>
+  </div>
+</header>
+
+<div class="layout">
+  <div class="sidebar">
+
+    <!-- API KEYS -->
+    <div class="slabel">API Keys</div>
+
+    <div class="key-row">
+      <label><span class="dot" id="d-yelp"></span>Yelp Fusion</label>
+      <input id="k-yelp" type="password" placeholder="Bearer token...">
+    </div>
+    <div class="key-row">
+      <label><span class="dot" id="d-apollo"></span>Apollo.io</label>
+      <input id="k-apollo" type="password" placeholder="API key...">
+    </div>
+    <div class="key-row">
+      <label><span class="dot" id="d-close"></span>Close CRM</label>
+      <input id="k-close" type="password" placeholder="API key...">
+    </div>
+    <div class="key-row">
+      <label><span class="dot" id="d-facebook"></span>Facebook Graph</label>
+      <input id="k-facebook" type="password" placeholder="Access token...">
+    </div>
+    <div class="key-row">
+      <label><span class="dot" id="d-linkedin"></span>LinkedIn</label>
+      <input id="k-linkedin" type="password" placeholder="Access token...">
+    </div>
+    <div class="key-row">
+      <label><span class="dot" id="d-angi"></span>Angi</label>
+      <input id="k-angi" type="password" placeholder="API key...">
+      <div class="approval manual">⏳ Requires manual approval</div>
+    </div>
+    <div class="key-row">
+      <label><span class="dot" id="d-thumbtack"></span>Thumbtack</label>
+      <input id="k-thumbtack" type="password" placeholder="API key...">
+      <div class="approval manual">⏳ Requires manual approval</div>
+    </div>
+    <div class="key-row">
+      <label><span class="dot" id="d-houzz"></span>Houzz Pro</label>
+      <input id="k-houzz" type="password" placeholder="API key...">
+      <div class="approval manual">⏳ Requires manual approval</div>
+    </div>
+
+    <button class="btn btn-outline mt8" onclick="saveKeys()">💾 Save All Keys</button>
+
+    <!-- SEARCH -->
+    <div class="slabel">Search</div>
+    <div class="field">
+      <label>Category</label>
+      <select id="category">
+        <option value="window installation">Windows & Sliding Doors</option>
+        <option value="kitchen remodel">Kitchen Remodeling</option>
+        <option value="bathroom remodel">Bathroom Remodeling</option>
+        <option value="general contractor">General Contractor</option>
+        <option value="home maintenance">Home Maintenance</option>
+        <option value="construction">Construction</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Location</label>
+      <input id="location" type="text" value="San Francisco, CA">
+    </div>
+    <div class="field">
+      <label>Leads per source</label>
+      <input id="limit" type="number" value="20" min="1" max="50">
+    </div>
+
+    <!-- SOURCES -->
+    <div class="slabel">Sources</div>
+    <div class="src-grid">
+      <label class="src-item"><input type="checkbox" id="s-yelp" checked>
+        <span class="src-dot" style="background:#ff6b6b"></span><span class="src-name">Yelp</span></label>
+      <label class="src-item"><input type="checkbox" id="s-apollo">
+        <span class="src-dot" style="background:#f0a500"></span><span class="src-name">Apollo</span></label>
+      <label class="src-item"><input type="checkbox" id="s-facebook">
+        <span class="src-dot" style="background:#58a6ff"></span><span class="src-name">Facebook</span></label>
+      <label class="src-item"><input type="checkbox" id="s-linkedin">
+        <span class="src-dot" style="background:#79c0ff"></span><span class="src-name">LinkedIn</span></label>
+      <label class="src-item"><input type="checkbox" id="s-angi">
+        <span class="src-dot" style="background:#ffa05a"></span><span class="src-name">Angi</span></label>
+      <label class="src-item"><input type="checkbox" id="s-thumbtack">
+        <span class="src-dot" style="background:#56d3ff"></span><span class="src-name">Thumbtack</span></label>
+      <label class="src-item" style="grid-column:span 2"><input type="checkbox" id="s-houzz">
+        <span class="src-dot" style="background:#70db4f"></span><span class="src-name">Houzz Pro</span></label>
+    </div>
+
+    <button class="btn btn-primary mt12" onclick="fetchLeads()" id="fetchBtn">🔍 Fetch Leads</button>
+
+    <!-- ACTIONS -->
+    <div class="slabel">Export</div>
+    <div class="row2">
+      <button class="btn btn-green btn-sm" onclick="exportCSV()">📥 CSV</button>
+      <button class="btn btn-blue btn-sm"  onclick="pushCRM()">📤 Close CRM</button>
+    </div>
+    <button class="btn btn-danger btn-sm mt8" onclick="clearLeads()">🗑 Clear All Leads</button>
+
+  </div><!-- /sidebar -->
+
+  <main>
+    <div class="tabs">
+      <div class="tab active" onclick="setTab('all',this)">All Leads</div>
+      <div class="tab" onclick="setTab('yelp',this)">Yelp</div>
+      <div class="tab" onclick="setTab('apollo',this)">Apollo</div>
+      <div class="tab" onclick="setTab('facebook',this)">Facebook</div>
+      <div class="tab" onclick="setTab('linkedin',this)">LinkedIn</div>
+      <div class="tab" onclick="setTab('angi',this)">Angi</div>
+      <div class="tab" onclick="setTab('thumbtack',this)">Thumbtack</div>
+      <div class="tab" onclick="setTab('houzz',this)">Houzz</div>
+      <div class="tab" onclick="setTab('log',this)">Log</div>
+    </div>
+
+    <!-- STATS -->
+    <div class="cards" id="statsCards"></div>
+
+    <!-- TABLE -->
+    <div id="tab-table">
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr><th>#</th><th>Source</th><th>Name</th><th>Phone</th><th>Email</th><th>Address</th><th>Rating</th><th>Link</th></tr>
+          </thead>
+          <tbody id="leadsBody">
+            <tr><td colspan="8">
+              <div class="empty"><div class="icon">🔍</div><h3>No leads yet</h3><p>Configure API keys and click Fetch Leads</p></div>
+            </td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- LOG -->
+    <div id="tab-log" class="hidden">
+      <div id="log">Ready. Waiting for activity...\n</div>
+    </div>
+  </main>
+</div>
+
+<script>
+let allLeads = [];
+let currentFilter = 'all';
+
+// ── TABS ─────────────────────────────────────────────────────────────────────
+function setTab(name, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  const isLog = name === 'log';
+  document.getElementById('tab-table').classList.toggle('hidden', isLog);
+  document.getElementById('tab-log').classList.toggle('hidden', !isLog);
+  document.getElementById('statsCards').classList.toggle('hidden', isLog);
+  if (!isLog) { currentFilter = name; renderTable(); }
+}
+
+// ── LOG ──────────────────────────────────────────────────────────────────────
+function log(msg, type='i') {
+  const el = document.getElementById('log');
+  const t  = new Date().toLocaleTimeString();
+  const cls = {s:'ls',e:'le',i:'li',w:'lw'}[type]||'li';
+  el.innerHTML += `<span class="${cls}">[${t}] ${msg}\n</span>`;
+  el.scrollTop = el.scrollHeight;
+}
+
+// ── CONFIG ───────────────────────────────────────────────────────────────────
+const KEY_MAP = {
+  yelp:'yelp_api_key', apollo:'apollo_api_key', close:'close_api_key',
+  facebook:'facebook_token', linkedin:'linkedin_token',
+  angi:'angi_api_key', thumbtack:'thumbtack_key', houzz:'houzz_api_key'
+};
+
+async function loadConfig() {
+  const r = await fetch('/api/config');
+  const d = await r.json();
+  Object.entries(KEY_MAP).forEach(([short, key]) => {
+    const dot = document.getElementById('d-'+short);
+    if (dot) dot.className = 'dot' + (d[key] === 'set' ? ' set' : '');
+  });
+}
+
+async function saveKeys() {
+  const payload = {};
+  Object.entries(KEY_MAP).forEach(([short, key]) => {
+    const el = document.getElementById('k-'+short);
+    if (el && el.value.trim()) payload[key] = el.value.trim();
+  });
+  await fetch('/api/config', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify(payload)
+  });
+  log('API keys saved ✓', 's');
+  Object.keys(KEY_MAP).forEach(s => {
+    const el = document.getElementById('k-'+s);
+    if (el) el.value = '';
+  });
+  loadConfig();
+}
+
+// ── FETCH ─────────────────────────────────────────────────────────────────────
+async function fetchLeads() {
+  const sources = ['yelp','apollo','facebook','linkedin','angi','thumbtack','houzz']
+    .filter(s => document.getElementById('s-'+s)?.checked);
+  if (!sources.length) { log('Select at least one source', 'w'); return; }
+
+  const btn = document.getElementById('fetchBtn');
+  btn.innerHTML = '<span class="spinner"></span>Fetching...';
+  btn.disabled = true;
+
+  try {
+    const r = await fetch('/api/fetch', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        sources,
+        category: document.getElementById('category').value,
+        location: document.getElementById('location').value,
+        limit:    document.getElementById('limit').value
+      })
+    });
+    const d = await r.json();
+    if (d.errors?.length) d.errors.forEach(e => log(e, 'e'));
+    Object.entries(d.by_source||{}).forEach(([src,n]) => log(`${src}: +${n} leads`, 's'));
+    log(`Total leads: ${d.total}`, 'i');
+    await loadLeads();
+  } catch(e) { log('Fetch error: '+e.message, 'e'); }
+
+  btn.innerHTML = '🔍 Fetch Leads';
+  btn.disabled = false;
+}
+
+// ── LOAD & RENDER ─────────────────────────────────────────────────────────────
+async function loadLeads() {
+  const r   = await fetch('/api/leads');
+  allLeads  = await r.json();
+
+  // Header stats
+  const counts = {};
+  allLeads.forEach(l => counts[l.source] = (counts[l.source]||0)+1);
+  document.getElementById('hTotal').textContent = allLeads.length;
+  ['Yelp','Apollo','Facebook','LinkedIn','Angi','Thumbtack','Houzz'].forEach(s => {
+    const el = document.getElementById('h'+s);
+    if (el) el.textContent = counts[s]||0;
+  });
+
+  // Stats cards
+  const cards = document.getElementById('statsCards');
+  const cardDefs = [
+    {src:'all',    label:'Total Leads', color:'var(--text)'},
+    {src:'Yelp',   label:'Yelp',        color:'#ff6b6b'},
+    {src:'Apollo', label:'Apollo',      color:'#f0a500'},
+    {src:'Facebook',label:'Facebook',   color:'#58a6ff'},
+    {src:'LinkedIn',label:'LinkedIn',   color:'#79c0ff'},
+    {src:'Angi',   label:'Angi',        color:'#ffa05a'},
+    {src:'Thumbtack',label:'Thumbtack', color:'#56d3ff'},
+    {src:'Houzz',  label:'Houzz',       color:'#70db4f'},
+  ];
+  cards.innerHTML = cardDefs.map(c => `
+    <div class="card">
+      <div class="cv" style="color:${c.color}">${c.src==='all'?allLeads.length:counts[c.src]||0}</div>
+      <div class="cl">${c.label}</div>
+    </div>`).join('');
+
+  renderTable();
+}
+
+function renderTable() {
+  const leads = currentFilter==='all'
+    ? allLeads
+    : allLeads.filter(l => l.source.toLowerCase()===currentFilter);
+
+  const body = document.getElementById('leadsBody');
+  if (!leads.length) {
+    body.innerHTML = `<tr><td colspan="8"><div class="empty"><div class="icon">📭</div><h3>No leads for this source</h3></div></td></tr>`;
+    return;
+  }
+  body.innerHTML = leads.map((l,i) => `
+    <tr>
+      <td class="dim">${i+1}</td>
+      <td><span class="badge b-${l.source}">${l.source}</span></td>
+      <td><strong>${l.name||'—'}</strong></td>
+      <td>${l.phone||'<span class="dim">—</span>'}</td>
+      <td>${l.email||'<span class="dim">—</span>'}</td>
+      <td class="dim" style="font-size:11px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${l.address||'—'}</td>
+      <td class="stars">${l.rating?'★'.repeat(Math.round(l.rating||0)):'—'}</td>
+      <td>${l.url?`<a class="link" href="${l.url}" target="_blank">View ↗</a>`:'—'}</td>
+    </tr>`).join('');
+}
+
+// ── EXPORT ────────────────────────────────────────────────────────────────────
+function exportCSV() {
+  window.location.href='/api/export/csv';
+  log('CSV export downloading...','i');
+}
+
+async function pushCRM() {
+  log('Pushing all leads to Close CRM...','i');
+  const r = await fetch('/api/push_crm',{
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({})
+  });
+  const d = await r.json();
+  log(`Close CRM: pushed ${d.pushed} leads`,'s');
+  if (d.errors?.length) d.errors.slice(0,5).forEach(e=>log('CRM: '+e,'e'));
+}
+
+async function clearLeads() {
+  if (!confirm('Delete all leads? This cannot be undone.')) return;
+  await fetch('/api/clear',{method:'POST'});
+  log('All leads cleared','w');
+  loadLeads();
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+loadConfig();
+loadLeads();
+</script>
+</body>
+</html>
