@@ -5,7 +5,7 @@ import os
 import json
 from datetime import datetime
 
-app = Flask(__name__)
+template_folder = 'Templates'
 
 # ─── CONFIG ───────────────────────────────────────────────────────────────────
 CONFIG = {
